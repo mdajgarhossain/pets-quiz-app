@@ -21,17 +21,36 @@
             height="200"
             width="200"
           />
-          <div v-for="(choiceItem, ind) in item.choices" :key="ind">
+          <div
+            class="choice-button__group"
+            v-for="(choiceItem, ind) in item.choices"
+            :key="ind"
+          >
             <button
+              class="choice-button"
               :disabled="item.isQuestionAnswered"
               :class="choiceItem.class"
               @click="checkAnswer(choiceItem.choice, index, ind)"
             >
-              {{ choiceItem.choice }}
+              <p>{{ choiceItem.choice }}</p>
+              <img
+                v-if="choiceItem.class == 'correctAnswer'"
+                :src="TickIcon"
+                alt=""
+                height="20"
+                width="20"
+              />
+              <img
+                v-if="choiceItem.class == 'wrongAnswer'"
+                :src="CrossIcon"
+                alt=""
+                height="20"
+                width="20"
+              />
             </button>
           </div>
           <button
-          class="next-button"
+            class="next-button"
             v-if="item.isQuestionAnswered"
             @click="gotoNextQuestion(index)"
           >
@@ -40,9 +59,11 @@
         </div>
       </div>
       <div v-if="showResult">
-        <img :src="ResultImage" alt="" class="result-image">
+        <img :src="ResultImage" alt="" class="result-image" />
         <h1>Result</h1>
-        <p class="result-body">You got {{ quizResult.correct }} correct answers</p>
+        <p class="result-body">
+          You got {{ quizResult.correct }} correct answers
+        </p>
         <button @click="tryAgain()" class="try-again-button">Try again</button>
       </div>
     </div>
@@ -50,7 +71,9 @@
 </template>
 
 <script>
-import ResultImage from '../assets/images/undraw_winners_re_wr1l 1.png'
+import ResultImage from "../assets/images/undraw_winners_re_wr1l 1.png";
+import TickIcon from "../assets/images/tick-icon.jpg";
+import CrossIcon from "../assets/images/cross-icon.jpg";
 export default {
   name: "Quiz",
   props: {},
@@ -58,6 +81,8 @@ export default {
   data() {
     return {
       ResultImage: ResultImage,
+      TickIcon: TickIcon,
+      CrossIcon: CrossIcon,
       showResult: false,
       imageUrl: null,
       questions: [
@@ -65,7 +90,7 @@ export default {
           id: 1,
           question: "Which breed is Freckles?",
           choices: [
-            { choice: "A. Weimaraner", class: "answer",  },
+            { choice: "A. Weimaraner", class: "answer" },
             { choice: "B. Australian Cattledog", class: "answer" },
             { choice: "C. Border Collie", class: "answer" },
             { choice: "D. Pembroke", class: "answer" },
@@ -150,7 +175,11 @@ export default {
     gotoNextQuestion(index) {
       this.questions[index].visibilty = false;
 
-      if (this.questions.length - 1 === index) {
+      if (
+        this.questions.length - 1 === index ||
+        this.questions[index].correctAnswer !==
+          this.questions[index].answeredValue
+      ) {
         this.showResult = true;
         this.questions[index].visibilty = false;
       } else {
@@ -214,15 +243,15 @@ body {
   top: 100px;
 }
 .answer {
-  font-size:17px;
-  width:300px;
-  height:40px;
-  border-width:1px;
+  font-size: 17px;
+  width: 300px;
+  height: 40px;
+  border-width: 1px;
   color: rgba(29, 28, 28, 0.555);
-  border-color:gray;
-  font-weight:bold;
+  border-color: gray;
+  font-weight: bold;
   border-radius: 8px;
-  background:#fff;
+  background: #fff;
   margin-top: 10px;
 }
 
@@ -233,17 +262,17 @@ body {
 .next-button {
   margin-top: 20px;
   margin-left: 200px;
-  font-size:15px;
-  width:117px;
-  height:46px;
-  border-width:0px;
-  color:#ffffff;
-  border-color:#337fed;
-  font-weight:bold;
+  font-size: 15px;
+  width: 117px;
+  height: 46px;
+  border-width: 0px;
+  color: #ffffff;
+  border-color: #337fed;
+  font-weight: bold;
   border-radius: 42px;
-  box-shadow:inset 0px 1px 0px 0px #97c4fe;
-  text-shadow:inset 0px 1px 0px #1570cd;
-  background:linear-gradient(#3d94f6, #1e62d0);
+  box-shadow: inset 0px 1px 0px 0px #97c4fe;
+  text-shadow: inset 0px 1px 0px #1570cd;
+  background: linear-gradient(#3d94f6, #1e62d0);
 }
 .next-button:hover {
   background: linear-gradient(#1e62d0, #3d94f6);
@@ -256,12 +285,12 @@ body {
 .correctAnswer {
   background-color: rgb(46, 124, 46);
   color: white;
-  font-size:17px;
-  width:300px;
-  height:40px;
-  border-width:1px;
-  border-color:gray;
-  font-weight:bold;
+  font-size: 17px;
+  width: 300px;
+  height: 40px;
+  border-width: 1px;
+  border-color: gray;
+  font-weight: bold;
   border-radius: 8px;
   margin-top: 10px;
 }
@@ -269,12 +298,12 @@ body {
 .wrongAnswer {
   background-color: #d33434;
   color: white;
-  font-size:17px;
-  width:300px;
-  height:40px;
-  border-width:1px;
-  border-color:gray;
-  font-weight:bold;
+  font-size: 17px;
+  width: 300px;
+  height: 40px;
+  border-width: 1px;
+  border-color: gray;
+  font-weight: bold;
   border-radius: 8px;
   margin-top: 10px;
 }
@@ -300,7 +329,17 @@ body {
   margin-top: 20px;
 }
 .try-again-button:hover {
-  background: #2196F3;
+  background: #2196f3;
   color: white;
+}
+.choice-button__group {
+  display: flex;
+  justify-content: center;
+}
+.choice-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
 }
 </style>
