@@ -14,7 +14,13 @@
       <div v-for="(item, index) in questions" :key="item.id">
         <div v-if="item.visibilty">
           <h2>{{ item.question }}</h2>
-          <img v-if="item.image" :src="item.image" alt="" height="200" width="200" />
+          <img
+            v-if="item.image"
+            :src="item.image"
+            alt=""
+            height="200"
+            width="200"
+          />
           <div v-for="(choiceItem, ind) in item.choices" :key="ind">
             <button
               :disabled="item.isQuestionAnswered"
@@ -25,19 +31,16 @@
             </button>
           </div>
           <button
-            v-if="item.isQuestionAnswered && index < questions.length - 1"
+            v-if="item.isQuestionAnswered"
             @click="gotoNextQuestion(index)"
           >
             Next
           </button>
-
-          <div>
-            <pre>
-            {{ quizResult }}
-          </pre
-            >
-          </div>
         </div>
+      </div>
+      <div v-if="showResult">
+        <span>Correct answer: {{ quizResult.correct }}</span>
+        <button @click="tryAgain()">Try again?</button>
       </div>
     </div>
   </div>
@@ -50,6 +53,7 @@ export default {
 
   data() {
     return {
+      showResult: false,
       imageUrl: null,
       questions: [
         {
@@ -121,17 +125,6 @@ export default {
       if (jsonResponse && jsonResponse.message) {
         this.questions[0].image = jsonResponse.message;
       }
-
-      console.log(jsonResponse);
-
-      // let data = jsonResponse.results.map((question) => {
-      //   // put choices on question into single array
-      //   question.choices = [
-      //     question.correct_answer,
-      //     ...question.incorrect_choices
-      //   ];
-      //   return question;
-      // });
     },
     checkAnswer(answer, index, choiceIndex) {
       const question = this.questions[index];
@@ -151,11 +144,29 @@ export default {
 
     gotoNextQuestion(index) {
       this.questions[index].visibilty = false;
-      this.questions[index + 1].visibilty = true;
-      // if(this.questions.length === this.quizResult.totalAnswered) {
-      //   this.questions[index].visibilty = false;
-      //   this.questions[index + 1].visibilty = false;
-      // }
+
+      if (this.questions.length - 1 === index) {
+        this.showResult = true;
+        this.questions[index].visibilty = false;
+      } else {
+        this.questions[index + 1].visibilty = true;
+      }
+    },
+    tryAgain() {
+      this.showResult = false;
+      this.questions[0].visibilty = true;
+      this.questions.forEach((data) => {
+        data.choices = data.choices.map((item) => {
+          return { ...item, class: "answer" };
+        });
+      });
+      this.questions = this.questions.map((item) => {
+        return {
+          ...item,
+          isQuestionAnswered: false,
+          answeredValue: null,
+        };
+      });
     },
   },
 };
