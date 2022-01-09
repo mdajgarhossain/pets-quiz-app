@@ -13,7 +13,7 @@
     <div class="question-card">
       <div v-for="(item, index) in questions" :key="item.id">
         <div v-if="item.visibilty">
-          <h2>{{ item.question }}</h2>
+          <h2 class="question">{{ item.question }}</h2>
           <img
             v-if="item.image"
             :src="item.image"
@@ -211,12 +211,10 @@ export default {
 body {
   background-color: #585b89;
   position: relative;
-  overflow-x: hidden;
 }
 
 .quiz-container {
   margin: 1rem auto;
-  padding: 1.5rem;
   max-width: 700px;
 }
 .headline {
@@ -224,23 +222,19 @@ body {
   font-size: 35px;
 }
 .bg-image1 {
-  top: -240px;
-  right: -250px;
-  position: absolute;
+  display: none;
+  position: static;
 }
 .bg-image2 {
-  top: 180px;
-  left: -80px;
-  position: absolute;
+  display: none;
+  position: static;
 }
 .question-card {
   background-color: #ffffff;
   border-radius: 24px;
-  width: 400px;
+  max-width: 400px;
   height: 550px;
-  position: absolute;
-  left: 488px;
-  top: 100px;
+  margin: 0 auto;
 }
 .answer {
   font-size: 17px;
@@ -341,5 +335,13 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
+}
+.question {
+  padding-top: 15px;
+}
+@media screen and (max-width: 768px) {
+  .question {
+    font-size: 22px;
+  }
 }
 </style>
